@@ -23,4 +23,4 @@ def new_car_view(request):
             return redirect('cars_list') # envia o form pra view e envia o client p/ a lista de carros
     else:
         new_car_form = CarModelForm() # cria o formulário vazio
-    return render(request, 'new_car.html', {'new_car_form': new_car_form})
+    return render(request, 'new_car.html', { 'new_car_form': new_car_form })
