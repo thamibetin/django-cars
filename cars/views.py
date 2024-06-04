@@ -1,26 +1,33 @@
 from django.shortcuts import render, redirect
 from cars.models import Car
 from cars.forms import CarModelForm
-
-def cars_view(request):
-    cars = Car.objects.all().order_by('model')
-    search = request.GET.get('search')
-
-    if search:
-        cars = cars.filter(model__icontains=search)
-
-    return render(request,
-                  'cars.html',
-                  {'cars': cars}
-    )
+from django.views import View
 
 
-def new_car_view(request):
-    if request.method == 'POST':
+class CarsView(View):
+
+    def get(self, request):
+        cars = Car.objects.all().order_by('model')
+        search = request.GET.get('search')
+
+        if search:
+            cars = cars.filter(model__icontains=search)
+
+        return render(request,
+                      'cars.html',
+                      {'cars': cars}
+        )    
+
+
+class NewCarsView(View):
+    
+    def get(self, request):
+        new_car_form = CarModelForm()
+        return render(request, 'new_car.html', {'new_car_form': new_car_form})
+
+    def post(self, request):
         new_car_form = CarModelForm(request.POST, request.FILES)
         if new_car_form.is_valid():
             new_car_form.save()
-            return redirect('cars_list') # envia o form pra view e envia o client p/ a lista de carros
-    else:
-        new_car_form = CarModelForm() # cria o formulário vazio
-    return render(request, 'new_car.html', { 'new_car_form': new_car_form })
+            return redirect('cars_list')
+        return render(request, 'new_car.html', {'new_car_form': new_car_form})
